@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.koitt.board.dao.UserInfoDaoImpl">
+
+	<select id="selectAll" resultType="UserInfo">
+		SELECT u.email, u.password, u.name, u.avatar, ut.id, ut.type
+		FROM user_info u,
+			(SELECT user_info_type.user_info_email, user_type.id, user_type.type
+			FROM user_info_type, user_type
+			WHERE user_type.id = user_info_type.user_type_id) ut
+		WHERE u.email = ut.user_info_email
+	</select>
+	
+	<resultMap type="UserInfo" id="userInfoResultMap">
+		<id property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="avatar" column="avatar" />
+		<collection property="userTypes" ofType="UserType">
+			<id property="id" column="id" />
+			<result property="type" column="type"/>
+		</collection>
+	</resultMap>
+	
+	<select id="select" parameterType="String" resultMap="userInfoResultMap">
+		SELECT u.email, u.password, u.name, u.avatar, ut.id, ut.type
+		FROM user_info u,
+			(SELECT user_info_type.user_info_email, user_type.id, user_type.type
+			FROM user_info_type, user_type
+			WHERE user_type.id = user_info_type.user_type_id) ut
+		WHERE u.email = ut.user_info_email AND u.email = #{email}
+	</select>
+	
+</mapper>
